@@ -1,2 +1,3 @@
 <Solution>
+  <Project Path="DeviceFleet.Api/DeviceFleet.Api.csproj" />
 </Solution>

@@ -1,0 +1,6 @@
+@DeviceFleet.Api_HostAddress = http://localhost:5228
+
+GET {{DeviceFleet.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
