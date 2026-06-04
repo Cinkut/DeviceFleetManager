@@ -1,11 +1,13 @@
 using DeviceFleet.Application.Models;
 using DeviceFleet.Application.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DeviceFleet.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize] // każdy endpoint wymaga uwierzytelnienia (zalogowania)
 public class DevicesController(IDeviceService service) : ControllerBase
 {
     /// <summary>Zwraca listę wszystkich urządzeń.</summary>
@@ -21,8 +23,9 @@ public class DevicesController(IDeviceService service) : ControllerBase
         return device is null ? NotFound() : Ok(device);
     }
 
-    /// <summary>Tworzy nowe urządzenie.</summary>
+    /// <summary>Tworzy nowe urządzenie. Wymaga roli Admin.</summary>
     [HttpPost]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult<DeviceDto>> Create(CreateDeviceRequest request, CancellationToken ct)
     {
         var (result, device) = await service.CreateAsync(request, ct);
@@ -33,13 +36,15 @@ public class DevicesController(IDeviceService service) : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = device!.Id }, device);
     }
 
-    /// <summary>Aktualizuje istniejące urządzenie.</summary>
+    /// <summary>Aktualizuje istniejące urządzenie. Wymaga roli Admin.</summary>
     [HttpPut("{id:guid}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Update(Guid id, UpdateDeviceRequest request, CancellationToken ct)
         => await service.UpdateAsync(id, request, ct) ? NoContent() : NotFound();
 
-    /// <summary>Usuwa urządzenie.</summary>
+    /// <summary>Usuwa urządzenie. Wymaga roli Admin.</summary>
     [HttpDelete("{id:guid}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Delete(Guid id, CancellationToken ct)
         => await service.DeleteAsync(id, ct) ? NoContent() : NotFound();
 }
