@@ -3,4 +3,5 @@
   <Project Path="DeviceFleet.Application/DeviceFleet.Application.csproj" />
   <Project Path="DeviceFleet.Domain/DeviceFleet.Domain.csproj" />
   <Project Path="DeviceFleet.Infrastructure/DeviceFleet.Infrastructure.csproj" />
+  <Project Path="DeviceFleet.Tests/DeviceFleet.Tests.csproj" />
 </Solution>
