@@ -1,7 +1,7 @@
-using DeviceFleet.Api.Models;
+using DeviceFleet.Domain;
 using Microsoft.EntityFrameworkCore;
 
-namespace DeviceFleet.Api.Data;
+namespace DeviceFleet.Infrastructure.Data;
 
 public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
 {

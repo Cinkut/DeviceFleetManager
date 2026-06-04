@@ -1,68 +1,45 @@
-using DeviceFleet.Api.Data;
-using DeviceFleet.Api.Models;
+using DeviceFleet.Application.Models;
+using DeviceFleet.Application.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace DeviceFleet.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class DevicesController(AppDbContext db) : ControllerBase
+public class DevicesController(IDeviceService service) : ControllerBase
 {
     /// <summary>Zwraca listę wszystkich urządzeń.</summary>
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Device>>> GetAll()
-        => Ok(await db.Devices.AsNoTracking().ToListAsync());
+    public async Task<ActionResult<IReadOnlyList<DeviceDto>>> GetAll(CancellationToken ct)
+        => Ok(await service.GetAllAsync(ct));
 
     /// <summary>Zwraca pojedyncze urządzenie po Id.</summary>
     [HttpGet("{id:guid}")]
-    public async Task<ActionResult<Device>> GetById(Guid id)
+    public async Task<ActionResult<DeviceDto>> GetById(Guid id, CancellationToken ct)
     {
-        var device = await db.Devices.FindAsync(id);
+        var device = await service.GetByIdAsync(id, ct);
         return device is null ? NotFound() : Ok(device);
     }
 
     /// <summary>Tworzy nowe urządzenie.</summary>
     [HttpPost]
-    public async Task<ActionResult<Device>> Create(CreateDeviceRequest request)
+    public async Task<ActionResult<DeviceDto>> Create(CreateDeviceRequest request, CancellationToken ct)
     {
-        var device = new Device
-        {
-            Name = request.Name,
-            SerialNumber = request.SerialNumber,
-            Status = request.Status
-        };
+        var (result, device) = await service.CreateAsync(request, ct);
 
-        db.Devices.Add(device);
-        await db.SaveChangesAsync();
+        if (result == CreateResult.DuplicateSerialNumber)
+            return Conflict($"Urządzenie o numerze seryjnym '{request.SerialNumber}' już istnieje.");
 
-        return CreatedAtAction(nameof(GetById), new { id = device.Id }, device);
+        return CreatedAtAction(nameof(GetById), new { id = device!.Id }, device);
     }
 
     /// <summary>Aktualizuje istniejące urządzenie.</summary>
     [HttpPut("{id:guid}")]
-    public async Task<IActionResult> Update(Guid id, UpdateDeviceRequest request)
-    {
-        var device = await db.Devices.FindAsync(id);
-        if (device is null) return NotFound();
-
-        device.Name = request.Name;
-        device.SerialNumber = request.SerialNumber;
-        device.Status = request.Status;
-
-        await db.SaveChangesAsync();
-        return NoContent();
-    }
+    public async Task<IActionResult> Update(Guid id, UpdateDeviceRequest request, CancellationToken ct)
+        => await service.UpdateAsync(id, request, ct) ? NoContent() : NotFound();
 
     /// <summary>Usuwa urządzenie.</summary>
     [HttpDelete("{id:guid}")]
-    public async Task<IActionResult> Delete(Guid id)
-    {
-        var device = await db.Devices.FindAsync(id);
-        if (device is null) return NotFound();
-
-        db.Devices.Remove(device);
-        await db.SaveChangesAsync();
-        return NoContent();
-    }
+    public async Task<IActionResult> Delete(Guid id, CancellationToken ct)
+        => await service.DeleteAsync(id, ct) ? NoContent() : NotFound();
 }

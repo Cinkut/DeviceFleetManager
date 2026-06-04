@@ -1,20 +1,19 @@
-using DeviceFleet.Api.Data;
-using Microsoft.EntityFrameworkCore;
+using DeviceFleet.Application;
+using DeviceFleet.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Rejestracja bazy danych (PostgreSQL przez EF Core).
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
+// Rejestracja warstw aplikacji.
+builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddApplication();
 
-// Rejestracja kontrolerów i generatora dokumentacji OpenAPI (Swagger).
+// Kontrolery + dokumentacja OpenAPI (Swagger).
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Swagger UI dostępne w środowisku deweloperskim pod /swagger.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

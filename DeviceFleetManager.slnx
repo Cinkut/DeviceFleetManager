@@ -1,3 +1,6 @@
 <Solution>
   <Project Path="DeviceFleet.Api/DeviceFleet.Api.csproj" />
+  <Project Path="DeviceFleet.Application/DeviceFleet.Application.csproj" />
+  <Project Path="DeviceFleet.Domain/DeviceFleet.Domain.csproj" />
+  <Project Path="DeviceFleet.Infrastructure/DeviceFleet.Infrastructure.csproj" />
 </Solution>

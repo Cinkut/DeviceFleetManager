@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace DeviceFleet.Api.Migrations
+namespace DeviceFleet.Infrastructure.Migrations
 {
     /// <inheritdoc />
     public partial class InitialCreate : Migration

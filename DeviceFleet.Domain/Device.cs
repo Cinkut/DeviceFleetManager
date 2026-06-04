@@ -1,4 +1,4 @@
-namespace DeviceFleet.Api.Models;
+namespace DeviceFleet.Domain;
 
 /// <summary>
 /// Status urządzenia w systemie zarządzania flotą.
@@ -13,7 +13,7 @@ public enum DeviceStatus
 }
 
 /// <summary>
-/// Pojedyncze urządzenie zarządzane przez system.
+/// Encja domenowa: pojedyncze urządzenie zarządzane przez system.
 /// </summary>
 public class Device
 {
