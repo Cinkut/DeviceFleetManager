@@ -1,29 +1,68 @@
+using DeviceFleet.Api.Data;
 using DeviceFleet.Api.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace DeviceFleet.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class DevicesController : ControllerBase
+public class DevicesController(AppDbContext db) : ControllerBase
 {
-    // Tymczasowe dane w pamięci — w Etapie 2 zastąpimy je bazą (EF Core + PostgreSQL).
-    private static readonly List<Device> Devices =
-    [
-        new Device { Name = "Radiotelefon-Krakow-01", SerialNumber = "SN-1001", Status = DeviceStatus.Online,  LastSeenUtc = DateTime.UtcNow.AddMinutes(-2) },
-        new Device { Name = "Radiotelefon-Krakow-02", SerialNumber = "SN-1002", Status = DeviceStatus.Offline, LastSeenUtc = DateTime.UtcNow.AddHours(-5) },
-        new Device { Name = "Terminal-Warszawa-01",   SerialNumber = "SN-2001", Status = DeviceStatus.Provisioning }
-    ];
-
     /// <summary>Zwraca listę wszystkich urządzeń.</summary>
     [HttpGet]
-    public ActionResult<IEnumerable<Device>> GetAll() => Ok(Devices);
+    public async Task<ActionResult<IEnumerable<Device>>> GetAll()
+        => Ok(await db.Devices.AsNoTracking().ToListAsync());
 
     /// <summary>Zwraca pojedyncze urządzenie po Id.</summary>
     [HttpGet("{id:guid}")]
-    public ActionResult<Device> GetById(Guid id)
+    public async Task<ActionResult<Device>> GetById(Guid id)
     {
-        var device = Devices.FirstOrDefault(d => d.Id == id);
+        var device = await db.Devices.FindAsync(id);
         return device is null ? NotFound() : Ok(device);
+    }
+
+    /// <summary>Tworzy nowe urządzenie.</summary>
+    [HttpPost]
+    public async Task<ActionResult<Device>> Create(CreateDeviceRequest request)
+    {
+        var device = new Device
+        {
+            Name = request.Name,
+            SerialNumber = request.SerialNumber,
+            Status = request.Status
+        };
+
+        db.Devices.Add(device);
+        await db.SaveChangesAsync();
+
+        return CreatedAtAction(nameof(GetById), new { id = device.Id }, device);
+    }
+
+    /// <summary>Aktualizuje istniejące urządzenie.</summary>
+    [HttpPut("{id:guid}")]
+    public async Task<IActionResult> Update(Guid id, UpdateDeviceRequest request)
+    {
+        var device = await db.Devices.FindAsync(id);
+        if (device is null) return NotFound();
+
+        device.Name = request.Name;
+        device.SerialNumber = request.SerialNumber;
+        device.Status = request.Status;
+
+        await db.SaveChangesAsync();
+        return NoContent();
+    }
+
+    /// <summary>Usuwa urządzenie.</summary>
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> Delete(Guid id)
+    {
+        var device = await db.Devices.FindAsync(id);
+        if (device is null) return NotFound();
+
+        db.Devices.Remove(device);
+        await db.SaveChangesAsync();
+        return NoContent();
     }
 }

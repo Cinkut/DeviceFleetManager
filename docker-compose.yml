@@ -1,0 +1,20 @@
+services:
+  db:
+    image: postgres:17
+    container_name: devicefleet-postgres
+    environment:
+      POSTGRES_DB: devicefleet
+      POSTGRES_USER: devicefleet
+      POSTGRES_PASSWORD: devicefleet_dev
+    ports:
+      - "5433:5432"
+    volumes:
+      - devicefleet-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U devicefleet"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  devicefleet-pgdata:
