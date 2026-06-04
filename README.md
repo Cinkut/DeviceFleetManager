@@ -31,15 +31,15 @@ DeviceFleet.Tests            # testy jednostkowe i integracyjne
 
 ## Status
 
-🚧 W budowie. Plan rozwoju:
+✅ **Ukończony** — wszystkie zaplanowane funkcjonalności zrealizowane.
 
-- [x] Etap 0 — repo + solucja
-- [x] Etap 1 — szkielet API + pierwszy endpoint (`GET /api/devices`)
-- [x] Etap 2 — baza danych (EF Core + PostgreSQL) + CRUD
-- [x] Etap 3 — architektura warstwowa + DTO/walidacja
-- [x] Etap 5 — testy jednostkowe (xUnit + Moq)
-- [x] Etap 4 — security (JWT, role, rate limiting)
-- [x] Etap 6 — Docker + CI (GitHub Actions)
+- [x] Web API + endpointy REST (`/api/devices`, `/api/auth`)
+- [x] Baza danych (EF Core + PostgreSQL) + pełny CRUD + migracje
+- [x] Architektura warstwowa (Domain / Application / Infrastructure / Api) + DTO i walidacja
+- [x] Security — JWT, role (Admin / Operator), rate limiting, OWASP Top 10
+- [x] Testy jednostkowe (xUnit + Moq)
+- [x] Konteneryzacja (Docker multi-stage + docker-compose) z automatycznymi migracjami
+- [x] CI — GitHub Actions (build + testy + budowa obrazu Docker)
 
 ## Bezpieczeństwo (OWASP Top 10)
 
