@@ -1,0 +1,9 @@
+# Nie kopiuj tych rzeczy do obrazu — to przyspiesza build i zmniejsza obraz.
+**/bin
+**/obj
+**/.git
+**/.vs
+**/.vscode
+**/*.user
+README.md
+docker-compose.yml

@@ -1,0 +1,45 @@
+name: CI
+
+# Uruchom przy każdym pushu na main oraz przy każdym Pull Requeście.
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      # 1. Pobierz kod z repozytorium.
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # 2. Zainstaluj .NET 10 SDK.
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      # 3. Pobierz pakiety NuGet.
+      - name: Restore
+        run: dotnet restore
+
+      # 4. Skompiluj w konfiguracji Release.
+      - name: Build
+        run: dotnet build --no-restore --configuration Release
+
+      # 5. Uruchom testy.
+      - name: Test
+        run: dotnet test --no-build --configuration Release --verbosity normal
+
+  docker-build:
+    runs-on: ubuntu-latest
+    needs: build-and-test   # buduj obraz tylko jeśli testy przeszły
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Sprawdź, że obraz Dockera w ogóle się buduje (bez publikacji do rejestru).
+      - name: Build Docker image
+        run: docker build -t devicefleet-api:ci .

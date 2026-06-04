@@ -16,5 +16,20 @@ services:
       timeout: 5s
       retries: 5
 
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: devicefleet-api
+    depends_on:
+      db:
+        condition: service_healthy   # API startuje dopiero gdy baza jest gotowa
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      # Wewnątrz sieci Dockera baza jest pod nazwą serwisu "db" na porcie 5432.
+      ConnectionStrings__Default: "Host=db;Port=5432;Database=devicefleet;Username=devicefleet;Password=devicefleet_dev"
+    ports:
+      - "8080:8080"
+
 volumes:
   devicefleet-pgdata:

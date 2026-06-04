@@ -1,5 +1,7 @@
 # Device Fleet Manager
 
+[![CI](https://github.com/Cinkut/DeviceFleetManager/actions/workflows/ci.yml/badge.svg)](https://github.com/Cinkut/DeviceFleetManager/actions/workflows/ci.yml)
+
 Cloud‑owy serwis do provisioningu i zarządzania flotą urządzeń (rejestracja urządzeń,
 grupowanie we floty, wysyłanie komend konfiguracyjnych i aktualizacji).
 
@@ -37,7 +39,7 @@ DeviceFleet.Tests            # testy jednostkowe i integracyjne
 - [x] Etap 3 — architektura warstwowa + DTO/walidacja
 - [x] Etap 5 — testy jednostkowe (xUnit + Moq)
 - [x] Etap 4 — security (JWT, role, rate limiting)
-- [ ] Etap 6 — Docker / Kubernetes / CI
+- [x] Etap 6 — Docker + CI (GitHub Actions)
 
 ## Bezpieczeństwo (OWASP Top 10)
 
@@ -57,11 +59,18 @@ Projekt świadomie adresuje wybrane ryzyka z OWASP Top 10:
 
 ## Uruchomienie
 
-```bash
-# 1. Baza danych w kontenerze
-docker compose up -d                 # PostgreSQL na porcie 5433
+### Opcja A — wszystko w Dockerze (zalecane)
 
-# 2. API
+```bash
+docker compose up -d --build         # buduje API + startuje API i bazę
+# API + Swagger: http://localhost:8080/swagger
+```
+Migracje bazy danych wykonują się automatycznie przy starcie API.
+
+### Opcja B — API lokalnie, baza w Dockerze
+
+```bash
+docker compose up -d db              # tylko PostgreSQL (port 5433)
 cd DeviceFleet.Api
 dotnet run                           # Swagger: http://localhost:<port>/swagger
 ```

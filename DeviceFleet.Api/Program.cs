@@ -4,7 +4,9 @@ using Microsoft.AspNetCore.RateLimiting;
 using DeviceFleet.Api.Auth;
 using DeviceFleet.Application;
 using DeviceFleet.Infrastructure;
+using DeviceFleet.Infrastructure.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 
@@ -73,6 +75,13 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 var app = builder.Build();
+
+// Automatyczne zastosowanie migracji przy starcie (wygodne w kontenerze/dev).
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    db.Database.Migrate();
+}
 
 if (app.Environment.IsDevelopment())
 {
